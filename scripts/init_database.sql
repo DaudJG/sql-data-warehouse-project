@@ -48,7 +48,7 @@ GO
 -- If it does not exist, create it. This schema is for raw data ingestion.
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'bronze')
 BEGIN
-    CREATE SCHEMA bronze;  -- Create the 'bronze' schema.
+    EXEC('CREATE SCHEMA bronze');  -- Create the 'bronze' schema using EXEC() to comply with SQL Server batch rules
 END
 GO
 
@@ -56,7 +56,7 @@ GO
 -- If it does not exist, create it. This schema is for transformed and cleansed data.
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'silver')
 BEGIN
-    CREATE SCHEMA silver;  -- Create the 'silver' schema.
+    EXEC('CREATE SCHEMA silver');  -- Create the 'silver' schema using EXEC() to comply with SQL Server batch rules
 END
 GO
 
@@ -64,6 +64,6 @@ GO
 -- If it does not exist, create it. This schema is for curated and final data.
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'gold')
 BEGIN
-    CREATE SCHEMA gold;  -- Create the 'gold' schema.
+    EXEC('CREATE SCHEMA gold');  -- Create the 'gold' schema using EXEC() to comply with SQL Server batch rules
 END
 GO
