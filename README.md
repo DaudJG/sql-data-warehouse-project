@@ -1,4 +1,4 @@
-# SQL Data Warehouse Portfolio Project
+# SQL Data Warehouse Project
 
 This project demonstrates my ability to design, build, and document a complete data warehouse using SQL Server, based on the modern Medallion architecture (Bronze, Silver, Gold layers). It follows industry best practices in data engineering, data modeling, and ETL workflows.
 
