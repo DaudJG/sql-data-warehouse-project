@@ -13,5 +13,11 @@ This project demonstrates my ability to design, build, and document a complete d
 
 ### 📚 Learning Context
 
-This project is based on a guided tutorial from Data With Baraa. I reproduced the entire solution, and quality checks to reinforce my understanding of production-level data workflows.
+## 📚 Tutorial Reference
+
+This project was inspired by and based on the following tutorial:
+
+🎓 [SQL Data Warehouse Project – Data With Baraa](https://www.youtube.com/watch?v=9GVqKuTVANE&list=PLNcg_FV9n7qZ4Ym8ZriYT6WF8TaC2e_R7&index=1)
+
+I followed the core structure and architecture taught in the tutorial but reproduced all implementation steps independently to solidify my hands-on SQL and data warehousing skills.
 
