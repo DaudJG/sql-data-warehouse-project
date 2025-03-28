@@ -40,10 +40,4 @@ These tests are meant to:
 - **Expected result**: Most queries should return zero rows
 - Any non-zero results indicate potential issues that should be reviewed and resolved
 
----
 
-## Notes
-
-- These tests are meant to supplement your ETL validation process
-- You can automate them or schedule them to run after pipeline jobs
-- Consider extending them to include thresholds or exception reporting
