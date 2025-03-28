@@ -1,4 +1,4 @@
-# 🟫 Bronze Layer – Raw Data Staging
+# Bronze Layer – Raw Data Staging
 
 This folder contains the scripts that define and load the **Bronze layer** of the SQL Data Warehouse using the Medallion Architecture.
 
