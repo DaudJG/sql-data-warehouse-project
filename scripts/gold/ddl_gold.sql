@@ -17,8 +17,7 @@ Usage:
 -- =============================================================================
 -- Create Dimension: gold.dim_customers
 -- =============================================================================
-IF OBJECT_ID('gold.dim_customers', 'V') IS NOT NULL
-    DROP VIEW gold.dim_customers;
+DROP VIEW IF EXISTS gold.dim_customers;
 GO
 
 CREATE VIEW gold.dim_customers AS
@@ -31,10 +30,11 @@ SELECT
     la.cntry              AS country,
     ci.cst_marital_status AS marital_status,
     CASE 
-        WHEN ci.cst_gndr <> 'n/a' THEN ci.cst_gndr  -- CRM is the primary source for gender
-        ELSE COALESCE(ca.gen, 'n/a')                -- Fallback to ERP data if CRM value is 'n/a'
+        WHEN ci.cst_gndr != 'n/a' THEN ci.cst_gndr
+        ELSE COALESCE(ca.gen, 'n/a')
     END                   AS gender,
     ca.bdate              AS birthdate,
+    ca.age                AS age,              
     ci.cst_create_date    AS create_date
 FROM silver.crm_cust_info AS ci
 LEFT JOIN silver.erp_cust_az12 AS ca ON ci.cst_key = ca.cid
@@ -44,13 +44,12 @@ GO
 -- =============================================================================
 -- Create Dimension: gold.dim_products
 -- =============================================================================
-IF OBJECT_ID('gold.dim_products', 'V') IS NOT NULL
-    DROP VIEW gold.dim_products;
+DROP VIEW IF EXISTS gold.dim_products;
 GO
 
 CREATE VIEW gold.dim_products AS
 SELECT
-    ROW_NUMBER() OVER (ORDER BY pn.prd_start_dt, pn.prd_key) AS product_key,  -- Surrogate key
+    ROW_NUMBER() OVER (ORDER BY pn.prd_start_dt, pn.prd_key) AS product_key,
     pn.prd_id       AS product_id,
     pn.prd_key      AS product_number,
     pn.prd_nm       AS product_name,
@@ -63,14 +62,13 @@ SELECT
     pn.prd_start_dt AS start_date
 FROM silver.crm_prd_info AS pn
 LEFT JOIN silver.erp_px_cat_g1v2 AS pc ON pn.cat_id = pc.id
-WHERE pn.prd_end_dt IS NULL;  -- Exclude historical data
+WHERE pn.prd_end_dt IS NULL;
 GO
 
 -- =============================================================================
 -- Create Fact Table: gold.fact_sales
 -- =============================================================================
-IF OBJECT_ID('gold.fact_sales', 'V') IS NOT NULL
-    DROP VIEW gold.fact_sales;
+DROP VIEW IF EXISTS gold.fact_sales;
 GO
 
 CREATE VIEW gold.fact_sales AS
@@ -87,4 +85,28 @@ SELECT
 FROM silver.crm_sales_details AS sd
 LEFT JOIN gold.dim_products AS pr ON sd.sls_prd_key = pr.product_number
 LEFT JOIN gold.dim_customers AS cu ON sd.sls_cust_id = cu.customer_id;
+GO
+
+-- =============================================================================
+-- Create View: gold.customer_sales_summary
+-- =============================================================================
+DROP VIEW IF EXISTS gold.customer_sales_summary;
+GO
+
+CREATE VIEW gold.customer_sales_summary AS
+SELECT
+    cu.customer_id,
+    cu.first_name + ' ' + cu.last_name AS full_name,
+    cu.country,
+    cu.age,                              
+    SUM(fs.sales_amount) AS total_sales,
+    SUM(fs.quantity)  AS total_quantity
+FROM gold.fact_sales AS fs
+JOIN gold.dim_customers AS cu ON fs.customer_key = cu.customer_key
+GROUP BY 
+    cu.customer_id,
+    cu.first_name,
+    cu.last_name,
+    cu.country,
+    cu.age;
 GO
