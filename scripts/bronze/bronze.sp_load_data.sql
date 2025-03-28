@@ -6,7 +6,9 @@ Script Purpose:
     This stored procedure loads data into the 'bronze' schema from external CSV files. 
     It performs the following actions:
     - Truncates the bronze tables before loading data.
+    - Logs each load event into bronze.load_log (custom enhancement)
     - Uses the `BULK INSERT` command to load data from csv Files to bronze tables.
+    - Handles errors with TRY/CATCH and prints clear messages
 
 Parameters:
     None. 
@@ -43,6 +45,8 @@ BEGIN
         WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
         SET @end_time = GETDATE();
         PRINT '>> Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+        INSERT INTO bronze.load_log (file_name, table_name, records_loaded)
+        SELECT 'cust_info.csv', 'bronze.crm_cust_info', COUNT(*) FROM bronze.crm_cust_info;
 
         -- crm_prd_info
         SET @start_time = GETDATE();
@@ -54,6 +58,8 @@ BEGIN
         WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
         SET @end_time = GETDATE();
         PRINT '>> Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+        INSERT INTO bronze.load_log (file_name, table_name, records_loaded)
+        SELECT 'prd_info.csv', 'bronze.crm_prd_info', COUNT(*) FROM bronze.crm_prd_info;
 
         -- crm_sales_details
         SET @start_time = GETDATE();
@@ -65,6 +71,8 @@ BEGIN
         WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
         SET @end_time = GETDATE();
         PRINT '>> Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+        INSERT INTO bronze.load_log (file_name, table_name, records_loaded)
+        SELECT 'sales_details.csv', 'bronze.crm_sales_details', COUNT(*) FROM bronze.crm_sales_details;
 
         -----------------------------
         -- Load ERP Tables
@@ -81,6 +89,8 @@ BEGIN
         WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
         SET @end_time = GETDATE();
         PRINT '>> Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+        INSERT INTO bronze.load_log (file_name, table_name, records_loaded)
+        SELECT 'loc_a101.csv', 'bronze.erp_loc_a101', COUNT(*) FROM bronze.erp_loc_a101;
 
         -- erp_cust_az12
         SET @start_time = GETDATE();
@@ -92,6 +102,8 @@ BEGIN
         WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
         SET @end_time = GETDATE();
         PRINT '>> Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+        INSERT INTO bronze.load_log (file_name, table_name, records_loaded)
+        SELECT 'cust_az12.csv', 'bronze.erp_cust_az12', COUNT(*) FROM bronze.erp_cust_az12;
 
         -- erp_px_cat_g1v2
         SET @start_time = GETDATE();
@@ -103,8 +115,12 @@ BEGIN
         WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
         SET @end_time = GETDATE();
         PRINT '>> Duration: ' + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR) + ' seconds';
+        INSERT INTO bronze.load_log (file_name, table_name, records_loaded)
+        SELECT 'px_cat_g1v2.csv', 'bronze.erp_px_cat_g1v2', COUNT(*) FROM bronze.erp_px_cat_g1v2;
 
+        -----------------------------
         -- Complete
+        -----------------------------
         SET @batch_end_time = GETDATE();
         PRINT '================================================';
         PRINT 'Bronze Layer Load Complete';
@@ -114,7 +130,7 @@ BEGIN
 
     BEGIN CATCH
         PRINT '================================================';
-        PRINT 'ERROR: Failed to Load Bronze Layer';
+        PRINT '❌ ERROR: Failed to Load Bronze Layer';
         PRINT 'Message   : ' + ERROR_MESSAGE();
         PRINT 'Number    : ' + CAST(ERROR_NUMBER() AS NVARCHAR);
         PRINT 'Severity  : ' + CAST(ERROR_SEVERITY() AS NVARCHAR);
@@ -122,4 +138,3 @@ BEGIN
         PRINT '================================================';
     END CATCH
 END;
-GO
