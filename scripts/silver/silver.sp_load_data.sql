@@ -215,7 +215,7 @@ BEGIN
 	    CASE 
 		WHEN bdate is NULL or bdate > GETDATE() THEN NULL
 		ELSE DATEDIFF(YEAR, bdate, GETDATE())
-	    END AS age
+	    END AS age,
             CASE
                 WHEN UPPER(TRIM(gen)) IN ('F', 'FEMALE') THEN 'Female'
                 WHEN UPPER(TRIM(gen)) IN ('M', 'MALE') THEN 'Male'
