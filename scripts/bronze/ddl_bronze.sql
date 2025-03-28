@@ -82,3 +82,24 @@ CREATE TABLE bronze.erp_px_cat_g1v2 (
     maintenance  NVARCHAR(50)
 );
 GO
+
+
+/*
+===============================================================================
+CUSTOM ADDITION: Load Log Table
+===============================================================================
+This table logs each CSV load into the Bronze layer for audit and tracking.
+===============================================================================
+*/
+DROP TABLE IF EXISTS bronze.load_log;
+GO
+
+CREATE TABLE bronze.load_log (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    file_name NVARCHAR(100),
+    table_name NVARCHAR(100),
+    records_loaded INT,
+    load_time DATETIME DEFAULT GETDATE(),
+    loaded_by NVARCHAR(50) DEFAULT SYSTEM_USER
+);
+GO
