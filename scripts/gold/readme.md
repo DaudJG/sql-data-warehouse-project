@@ -25,6 +25,9 @@ The Gold layer serves as the final presentation layer in the Medallion architect
 
 - `gold.customer_sales_summary`  
   Custom summary view aggregating total sales and quantity per customer, including age and country.
+  - Built on top of the core star schema (fact_sales + dim_customers)
+  - Not a dimension or fact table — serves as a semantic layer for reporting and analysis
+
 
 ---
 
