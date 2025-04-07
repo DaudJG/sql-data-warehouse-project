@@ -9,9 +9,8 @@ This project demonstrates my ability to design, build, and document a complete d
 - Star Schema with Fact and Dimension Tables
 - Data Quality Checks
 - Clear naming conventions 
-- Realistic datasets
 
-### 📚 Learning Context & Tutorial Reference
+### Learning Context & Tutorial Reference
 
 This project was inspired by and based on the following tutorial:
 
